@@ -8,11 +8,11 @@
  * To learn more and add one to your website, visit - https://superpwa.com
  */
  
-const cacheName = '<?php echo parse_url( get_bloginfo( 'url' ), PHP_URL_HOST ) . '-superpwa-' . SUPERPWA_VERSION; ?>';
-const startPage = '<?php echo superpwa_get_start_url(); ?>';
-const offlinePage = '<?php echo superpwa_get_offline_page(); ?>';
-const filesToCache = [<?php echo apply_filters( 'superpwa_sw_files_to_cache', 'startPage, offlinePage' ); ?>];
-const neverCacheUrls = [<?php echo apply_filters( 'superpwa_sw_never_cache_urls', '/\/wp-admin/,/\/wp-login/,/preview=true/' ); ?>];
+const cacheName = 'https://neranvamsi.github.io/pwa/-superpwa-2.1';
+const startPage = 'https://neranvamsi.github.io/pwa/';
+const offlinePage = 'https://neranvamsi.github.io/pwa/';
+const filesToCache = [ 'startPage, offlinePage'];
+const neverCacheUrls = [ '/\/wp-admin/,/\/wp-login/,/preview=true/' ];
 
 // Install
 self.addEventListener('install', function(e) {
