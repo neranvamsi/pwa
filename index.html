@@ -5,10 +5,6 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#536878" />
-        <link rel="apple-touch-icon" href="touch-icon-iphone.png">
-        <link rel="apple-touch-icon" sizes="152x152" href="touch-icon-ipad.png">
-        <link rel="apple-touch-icon" sizes="180x180" href="touch-icon-iphone-retina.png">
-        <link rel="apple-touch-icon" sizes="167x167" href="touch-icon-ipad-retina.png">
         
         <link rel="manifest" href="manifest.webmanifest">
 
@@ -22,33 +18,28 @@
             if('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js');
             };
-            let installPromptEvent;
+            const beforeInstallListener = e => {
+                // Prevent Chrome 76 and later from showing the install prompt
+                e.preventDefault();
+                // Stash the event so it can be triggered later.
+                dispatch(setAndroidDeferredPrompt(e));
+                dispatch(showAndroidPromptDownload(true));
+            };
+            window.addEventListener("beforeinstallprompt", beforeInstallListener);
+              const installToAndroid = async () => {
+                dispatch(showAndroidPromptDownload(false));
+                deferredPrompt.prompt(); // Wait for the user to respond to the prompt
+                const choiceResult = await deferredPrompt.userChoice;
 
-                window.addEventListener('beforeinstallprompt', (event) => {
-                  // Prevent Chrome <= 67 from automatically showing the prompt
-                  event.preventDefault();
-                  // Stash the event so it can be triggered later.
-                  installPromptEvent = event;
-                  // Update the install UI to notify the user app can be installed
-                  document.querySelector('#install-button').disabled = false;
-                });
-            
-            btnInstall.addEventListener('click', () => {
-              // Update the install UI to remove the install button
-              document.querySelector('#install-button').disabled = true;
-              // Show the modal add to home screen dialog
-              installPromptEvent.prompt();
-              // Wait for the user to respond to the prompt
-              installPromptEvent.userChoice.then((choice) => {
-                if (choice.outcome === 'accepted') {
-                  console.log('User accepted the A2HS prompt');
+                if (choiceResult.outcome === "accepted") {
+                    console.log("User accepted the PWA prompt");
                 } else {
-                  console.log('User dismissed the A2HS prompt');
+                    closeAndroidPromptWithoutDownload();
+                    console.log("User dismissed the PWA prompt");
                 }
-                // Clear the saved prompt since it can't be used again
-                installPromptEvent = null;
-              });
-            });
+                dispatch(setAndroidDeferredPrompt(null));
+            };
+            
             
             // Detects if device is on iOS 
             const isIos = () => {
