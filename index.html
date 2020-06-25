@@ -14,45 +14,42 @@
     <body>
 
         <h1>This is my page</h1>
+        <div id="installButtonDiv">
+            <button id="installButton">Install</button>
+        </div>
         <script>
             if('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js');
             };
-            const beforeInstallListener = e => {
-                // Prevent Chrome 76 and later from showing the install prompt
-                e.preventDefault();
-                // Stash the event so it can be triggered later.
-                dispatch(setAndroidDeferredPrompt(e));
-                dispatch(showAndroidPromptDownload(true));
-            };
-            window.addEventListener("beforeinstallprompt", beforeInstallListener);
-              const installToAndroid = async () => {
-                dispatch(showAndroidPromptDownload(false));
-                deferredPrompt.prompt(); // Wait for the user to respond to the prompt
-                const choiceResult = await deferredPrompt.userChoice;
-
-                if (choiceResult.outcome === "accepted") {
-                    console.log("User accepted the PWA prompt");
-                } else {
-                    closeAndroidPromptWithoutDownload();
-                    console.log("User dismissed the PWA prompt");
-                }
-                dispatch(setAndroidDeferredPrompt(null));
-            };
+            let installButton = document.getElementById('installButton');
+            installButton.onclick = doInstall;
             
+            let defferredPrompt;
             
-            // Detects if device is on iOS 
-            const isIos = () => {
-              const userAgent = window.navigator.userAgent.toLowerCase();
-              return /iphone|ipad|ipod/.test( userAgent );
+            window.addEventListener('beforeinstallprompt', (event) => {
+              // Prevent Chrome <= 67 from automatically showing the prompt
+              event.preventDefault();
+              // Stash the event so it can be triggered later.
+              defferredPrompt = event;
+              // Update the install UI to notify the user app can be installed
+              installButton.style.display = 'block';
+            });
+            
+            function doInstall() {
+                installButton.style.display = 'none';
+                defferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                defferredPrompt.userChoice.then((choice) => {
+                  if (choice.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                  } else {
+                    console.log('User dismissed the A2HS prompt');
+                  }
+                  // Clear the saved prompt since it can't be used again
+                  defferredPrompt = null;
+                });                
             }
-            // Detects if device is in standalone mode
-            const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
-
-            // Checks if should display install popup notification:
-            if (isIos() && !isInStandaloneMode()) {
-              this.setState({ showInstallMessage: true });
-            }
+            
         </script>
     </body>
 
