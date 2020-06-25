@@ -18,37 +18,14 @@
             <button id="installButton">Install</button>
         </div>
         <script>
-            if('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js');
-            };
-            let installButton = document.getElementById('installButton');
-            installButton.onclick = doInstall;
-            
-            let defferredPrompt;
-            
-            window.addEventListener('beforeinstallprompt', (event) => {
-              // Prevent Chrome <= 67 from automatically showing the prompt
-              event.preventDefault();
-              // Stash the event so it can be triggered later.
-              defferredPrompt = event;
-              // Update the install UI to notify the user app can be installed
-              installButton.style.display = 'block';
-            });
-            
-            function doInstall() {
-                installButton.style.display = 'none';
-                defferredPrompt.prompt();
-                // Wait for the user to respond to the prompt
-                defferredPrompt.userChoice.then((choice) => {
-                  if (choice.outcome === 'accepted') {
-                    console.log('User accepted the A2HS prompt');
-                  } else {
-                    console.log('User dismissed the A2HS prompt');
-                  }
-                  // Clear the saved prompt since it can't be used again
-                  defferredPrompt = null;
-                });                
-            }
+           if('serviceWorker'in navigator){
+               window.addEventListener('load',function() {
+                   navigator.serviceWorker.register(superpwa_sw.url).then(function(registration){
+                               console.log('SuperPWA service worker ready');registration.update();}).catch(
+                               function(error){console.log('Registration failed with '+error);
+                                              });
+                           });
+           };
             
         </script>
     </body>
