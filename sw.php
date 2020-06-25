@@ -1,22 +1,6 @@
 <?php
 
 
-/**
- * Service Worker Tempalte
- *
- * @return (string) Contents to be written to superpwa-sw.js
- * 
- * @since 1.0
- * @since 1.7 added filter superpwa_sw_template
- * @since 1.9 added filter superpwa_sw_files_to_cache
- */
-function superpwa_sw_template() {
-	
-	// Get Settings
-	$settings = superpwa_get_settings();
-	
-	// Start output buffer. Everything from here till ob_get_clean() is returned
-	ob_start();  ?>
 'use strict';
 
 /**
@@ -122,74 +106,4 @@ function checkNeverCacheList(url) {
 	}
 	return true;
 }
-<?php return apply_filters( 'superpwa_sw_template', ob_get_clean() );
-}
 
-
-/**
- * Delete Service Worker
- *
- * @return true on success, false on failure
- * 
- * @author Arun Basil Lal
- * 
- * @since 1.0
- */
-function superpwa_delete_sw() {
-	return superpwa_delete( superpwa_sw( 'abs' ) );
-}
-
-/**
- * Add images from offline page to filesToCache
- * 
- * If the offlinePage set by the user contains images, they need to be cached during sw install. 
- * For most websites, other assets (css, js) would be same as that of startPage which would be cached
- * when user visits the startPage the first time. If not superpwa_sw_files_to_cache filter can be used.
- * 
- * @param (string) $files_to_cache Comma separated list of files to cache during service worker install
- * 
- * @return (string) Comma separated list with image src's appended to $files_to_cache
- * 
- * @since 1.9
- */
-function superpwa_offline_page_images( $files_to_cache ) {
-	
-	// Get Settings
-	$settings = superpwa_get_settings();
-	
-	// Retrieve the post
-	$post = get_post( $settings['offline_page'] );
-	
-	// Return if the offline page is set to default
-	if( $post === NULL ) {
-		return $files_to_cache;
-	}
-	
-	// Match all images
-	preg_match_all( '/<img[^>]+src="([^">]+)"/', $post->post_content, $matches );
-	
-	// $matches[1] will be an array with all the src's
-	if( ! empty( $matches[1] ) ) {
-		return superpwa_httpsify( $files_to_cache . ', \'' . implode( '\', \'', $matches[1] ) . '\'' );
-	}
-	
-	return $files_to_cache;
-}
-add_filter( 'superpwa_sw_files_to_cache', 'superpwa_offline_page_images' );
-
-/**
- * Get offline page
- * 
- * @return (string) the URL of the offline page.
- * 
- * @author Arun Basil Lal
- * 
- * @since 2.0.1
- */
-function superpwa_get_offline_page() {
-	
-	// Get Settings
-	$settings = superpwa_get_settings();
-	
-	return get_permalink( $settings['offline_page'] ) ? superpwa_httpsify( get_permalink( $settings['offline_page'] ) ) : superpwa_httpsify( superpwa_get_bloginfo( 'sw' ) );
-}
