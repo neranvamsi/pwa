@@ -8,9 +8,9 @@
  * To learn more and add one to your website, visit - https://superpwa.com
  */
  
-const cacheName = 'https://neranvamsi.github.io/pwa-superpwa-2.1';
-const startPage = 'https://neranvamsi.github.io/pwa/';
-const offlinePage = 'https://neranvamsi.github.io/pwa/';
+const cacheName = '<?php echo $_SERVER['HTTP_HOST'] . '-superpwa-2.1'; ?>';
+const startPage = '<?php echo $_SERVER['HTTP_HOST'] ?>';
+const offlinePage = '<?php echo $_SERVER['HTTP_HOST'] ?>';
 const filesToCache = [ 'startPage, offlinePage'];
 const neverCacheUrls = [ '/\/wp-admin/,/\/wp-login/,/preview=true/' ];
 
