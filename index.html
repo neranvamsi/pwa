@@ -5,7 +5,10 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#536878" />
-
+        <link rel="apple-touch-icon" href="touch-icon-iphone.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="touch-icon-ipad.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="touch-icon-iphone-retina.png">
+        <link rel="apple-touch-icon" sizes="167x167" href="touch-icon-ipad-retina.png">
         
         <link rel="manifest" href="manifest.webmanifest">
 
@@ -46,6 +49,19 @@
                 installPromptEvent = null;
               });
             });
+            
+            // Detects if device is on iOS 
+            const isIos = () => {
+              const userAgent = window.navigator.userAgent.toLowerCase();
+              return /iphone|ipad|ipod/.test( userAgent );
+            }
+            // Detects if device is in standalone mode
+            const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+            // Checks if should display install popup notification:
+            if (isIos() && !isInStandaloneMode()) {
+              this.setState({ showInstallMessage: true });
+            }
         </script>
     </body>
 
