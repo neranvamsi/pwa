@@ -8,7 +8,7 @@
  * To learn more and add one to your website, visit - https://superpwa.com
  */
  
-const cacheName = 'https://neranvamsi.github.io/pwa/-superpwa-2.1';
+const cacheName = 'https://neranvamsi.github.io/pwa-superpwa-2.1';
 const startPage = 'https://neranvamsi.github.io/pwa/';
 const offlinePage = 'https://neranvamsi.github.io/pwa/';
 const filesToCache = [ 'startPage, offlinePage'];
